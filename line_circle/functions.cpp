@@ -1,37 +1,19 @@
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 void fill_pixel(int x, int y);
 
 
-
-void draw_vertical(int x, int y0, int y1)
+void line_dda(int x1, int y1, int x2, int y2)
 {
-    int dy = (y1 > y0 ? 1 : -1);
-    for (int y = y0; y != y1; y += dy)
-        fill_pixel(x,y);
-}
-
-void line_dda(int x0, int y0, int x1, int y1)
-{
-    int delta_x = x1-x0;
-    int delta_y = y1-y0;
-
-    int dx = (delta_x < 0 ? -1 : 1);
-    int dy = (delta_y < 0 ? -1 : 1);
-
-    if (delta_x == 0)
-    {
-        draw_vertical(x0,y0,y1);
-        return;
-    }
+    float delta_x = x2-x1;
+    float delta_y = y2-y1;
 
     int m = std::max(delta_x, delta_y);
 
     float eps = 1.0/m;
 
-    float x = x0, y = y0;
+    float x = x1, y = y1;
     for (int i = 0; i <= m; i++)
     {
         fill_pixel(std::round(x), std::round(y));
@@ -41,56 +23,90 @@ void line_dda(int x0, int y0, int x1, int y1)
 }
 
 
-void line_bresenham(int x0, int y0, int x1, int y1)
+void line_bresenham(int x1, int y1, int x2, int y2)
 {
-    int delta_x = x1-x0;
-    int delta_y = y1-y0;
+    int delta_x = std::abs(x2-x1);
+    int delta_y = std::abs(y2-y1);
 
-    int dx = (delta_x < 0 ? -1 : 1);
-    int dy = (delta_y < 0 ? -1 : 1);
+    bool f = 1;
 
-    if (delta_x == 0)
+    if (delta_y > delta_x)
     {
-        draw_vertical(x0,y0,y1);
-        return;
+        std::swap(x1,y1);
+        std::swap(x2,y2);
+        std::swap(delta_x, delta_y);
+        f = 0;
     }
 
-    int x = x0, y = y0;
-    /*
-    int d = abs(delta_y)-abs(delta_x);
-
-    while (x != x1 || y != y1)
+    if (x1 > x2)
     {
-        fill_pixel(x,y);
+        std::swap(x1,x2);
+        std::swap(y1,y2);
+    }
+
+    int d = 2*delta_y - delta_x;
+    int d1 = 2*delta_y, d2 = 2*delta_y - 2*delta_x;
+    int dy = (y2 > y1 ? 1 : -1);
+
+    for (int x = x1, y = y1; x <= x2; x++)
+    {
+        if (f) fill_pixel(x,y);
+        else   fill_pixel(y,x);
 
         if (d < 0)
-        {
-            x += dx;
-            d += 2*std::abs(delta_y);
-        }
+            d += d1;
         else
         {
-            d -= 2*std::abs(delta_x);
+            d += d2;
             y += dy;
         }
     }
-    fill_pixel(x,y);
-    */
-   int d = 2*delta_y - delta_x;
+}
 
-    while (x != x1 && y != y1)
+
+
+void circle_dda(int x0, int y0, int r)
+{
+    float eps = 0.5/r;
+
+    float x = x0+r, y = y0;
+
+    do
     {
-        fill_pixel(x,y);
+        fill_pixel(std::round(x), std::round(y));
+        x += eps*(y-y0);
+        y -= eps*(x-x0);
+    }
+    while (std::abs(x-x0-r) + std::abs(y-y0) > eps);
+}
 
+
+inline void symetry_fill(int x, int y, int x0, int y0)
+{
+    fill_pixel(x, y);
+    fill_pixel(2*x0-x, y);
+    fill_pixel(y-y0+x0, x-x0+y0);
+    fill_pixel(x0+y0-y, x-x0+y0);
+    fill_pixel(y-y0+x0, y0+x0-x);
+    fill_pixel(x0+y0-y, y0+x0-x);
+    fill_pixel(x, 2*y0-y);
+    fill_pixel(2*x0-x,  2*y0-y);
+}
+
+void circle_bresenham(int x0, int y0, int r)
+{
+    int d = 3-2*r;
+
+    int end = std::round(x0 + r*std::sqrt(2)/2);
+    for (int x = x0, y = y0+r; x <= end; x++)
+    {
+        symetry_fill(x,y,x0,y0);
         if (d < 0)
-        {
-            d += 2*delta_y;
-        }
+            d += 4*(x-x0)+6;
         else
         {
-            d += 2*(delta_y-delta_x);
-            y++;
+            d += 4*(x-y-x0+y0)+10;
+            y--;
         }
-        x++;
-    }
+    } 
 }
