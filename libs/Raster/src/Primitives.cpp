@@ -1,8 +1,7 @@
 #include <cmath>
-#include <RasterPrimitives.h>
+#include <Raster.h>
 
-
-void line_dda(Raster& grid, int x1, int y1, int x2, int y2)
+void Raster::line_dda(int x1, int y1, int x2, int y2, sf::Color color)
 {
     float delta_x = x2-x1;
     float delta_y = y2-y1;
@@ -14,14 +13,14 @@ void line_dda(Raster& grid, int x1, int y1, int x2, int y2)
     float x = x1, y = y1;
     for (int i = 0; i <= m; i++)
     {
-        grid.setPixel({(int)std::round(x), (int)std::round(y)});
+        setPixel((int)std::round(x), (int)std::round(y), color);
         x += eps*delta_x;
         y += eps*delta_y;       
     }
 }
 
 
-void line_bresenham(Raster& grid, int x1, int y1, int x2, int y2)
+void Raster::line_bresenham(int x1, int y1, int x2, int y2, sf::Color color)
 {
     int delta_x = std::abs(x2-x1);
     int delta_y = std::abs(y2-y1);
@@ -48,8 +47,8 @@ void line_bresenham(Raster& grid, int x1, int y1, int x2, int y2)
 
     for (int x = x1, y = y1; x <= x2; x++)
     {
-        if (f) grid.setPixel({x,y});
-        else   grid.setPixel({y,x});
+        if (f) setPixel(x,y,color);
+        else   setPixel(y,x,color);
 
         if (d < 0)
             d += d1;
@@ -63,7 +62,7 @@ void line_bresenham(Raster& grid, int x1, int y1, int x2, int y2)
 
 
 
-void circle_dda(Raster& grid, int x0, int y0, int r)
+void Raster::circle_dda(int x0, int y0, int r, sf::Color color)
 {
     float eps = 0.5/r;
 
@@ -71,7 +70,7 @@ void circle_dda(Raster& grid, int x0, int y0, int r)
 
     do
     {
-        grid.setPixel({(int)std::round(x), (int)std::round(y)});
+        setPixel((int)std::round(x), (int)std::round(y), color);
         x += eps*(y-y0);
         y -= eps*(x-x0);
     }
@@ -79,27 +78,27 @@ void circle_dda(Raster& grid, int x0, int y0, int r)
 }
 
 
-inline void symetry_fill(Raster& grid, int x, int y, int x0, int y0)
+inline void symetry_fill(Raster& raster, int x, int y, int x0, int y0, sf::Color color)
 {
-    grid.setPixel(x, y);
-    grid.setPixel(2*x0-x, y);
-    grid.setPixel(y-y0+x0, x-x0+y0);
-    grid.setPixel(x0+y0-y, x-x0+y0);
-    grid.setPixel(y-y0+x0, y0+x0-x);
-    grid.setPixel(x0+y0-y, y0+x0-x);
-    grid.setPixel(x, 2*y0-y);
-    grid.setPixel(2*x0-x,  2*y0-y);
+    raster.setPixel(x, y, color);
+    raster.setPixel(2*x0-x, y, color);
+    raster.setPixel(y-y0+x0, x-x0+y0, color);
+    raster.setPixel(x0+y0-y, x-x0+y0, color);
+    raster.setPixel(y-y0+x0, y0+x0-x, color);
+    raster.setPixel(x0+y0-y, y0+x0-x, color);
+    raster.setPixel(x, 2*y0-y, color);
+    raster.setPixel(2*x0-x,  2*y0-y, color);
 }
 
 
-void circle_bresenham(Raster& grid, int x0, int y0, int r)
+void Raster::circle_bresenham(int x0, int y0, int r, sf::Color color)
 {
     int d = 3-2*r;
 
     int end = std::round(x0 + r*std::sqrt(2)/2);
     for (int x = x0, y = y0+r; x <= end; x++)
     {
-        symetry_fill(grid, x, y, x0, y0);
+        symetry_fill(*this, x, y, x0, y0, color);
         if (d < 0)
             d += 4*(x-x0)+6;
         else

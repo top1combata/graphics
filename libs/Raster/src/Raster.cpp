@@ -1,5 +1,7 @@
 #include <Raster.h>
-#include <RasterPrimitives.h>
+
+
+const sf::Color Raster::DEFAULT_FILL_COLOR = sf::Color::Red;
 
 
 Raster::Raster(unsigned sz_x, unsigned sz_y, unsigned window_width, unsigned window_height) : m_raster(sz_x, std::vector<sf::RectangleShape>(sz_y, sf::RectangleShape({(float)window_width/sz_x, (float)window_height/sz_y}))),
@@ -18,15 +20,26 @@ Raster::Raster(unsigned sz_x, unsigned sz_y, unsigned window_width, unsigned win
 }
 
 
-void Raster::setPixel(Vector2i pixel)
+void Raster::setPixel(Vector2i pixel, sf::Color color)
 {
-    setPixel(pixel.x, pixel.y);
+    setPixel(pixel.x, pixel.y, color);
 }
 
-void Raster::setPixel(int x, int y)
+void Raster::setPixel(int x, int y, sf::Color color)
 {
-    m_raster.at(x).at(y).setFillColor(FILL_COLOR);
+    m_raster.at(x).at(y).setFillColor(color);
 }
+
+sf::Color Raster::getPixel(Vector2i pixel)
+{
+    return getPixel(pixel.x, pixel.y);
+}
+
+sf::Color Raster::getPixel(int x, int y)
+{
+    return m_raster.at(x).at(y).getFillColor();
+}
+
 
 void Raster::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
 {
@@ -37,15 +50,23 @@ void Raster::draw(sf::RenderTarget& target, const sf::RenderStates& states) cons
 
 
 
-void Raster::drawLine(Vector2i r1, Vector2i r2)
+void Raster::drawLine(Vector2i r1, Vector2i r2, sf::Color color)
 {
-    line_bresenham(*this, r1.x, r1.y, r2.x, r2.y);
-    // line_dda(*this, r1.x, r1.y, r2.x, r2.y);
+    line_bresenham(r1.x, r1.y, r2.x, r2.y, color);
+    // line_dda(r1.x, r1.y, r2.x, r2.y, color);
 }
 
 
-void Raster::drawCircle(Vector2i r0, unsigned R)
+void Raster::drawCircle(Vector2i r0, unsigned R, sf::Color color)
 {
-    circle_bresenham(*this, r0.x, r0.y, R);
-    // circle_dda(*this, r0.x, r0.y, R);
+    circle_bresenham(r0.x, r0.y, R, color);
+    // circle_dda(r0.x, r0.y, R, color);
+}
+
+
+void Raster::drawPolygon(const Polygon& polygon, sf::Color color)
+{
+    // polygon_scanline(polygon, color);
+    polygon_filling(polygon, color);
+    // polygon_active_edges(polygon, color);
 }

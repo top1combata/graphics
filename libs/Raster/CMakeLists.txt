@@ -5,8 +5,8 @@ set(PROJECT_NAME Raster)
 set(SOURCES 
     include/Raster.h
     src/Raster.cpp
-    src/RasterPrimitives.h
-    src/RasterPrimitives.cpp
+    src/Primitives.cpp
+    src/Polygon.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})

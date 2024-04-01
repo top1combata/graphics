@@ -16,9 +16,9 @@ int main()
     Raster raster(GRID_SZ_X, GRID_SZ_Y, WIDTH, HEIGHT);
     
 
-    raster.drawCircle({50, 100}, 21);
+    raster.drawCircle({50, 100}, 21, sf::Color::Green);
     raster.drawCircle({93, 100}, 21);
-    raster.drawLine({50, 80}, {50, 21});
+    raster.drawLine({50, 80}, {50, 21}, sf::Color::Black);
     raster.drawLine({93, 80}, {93, 21});
     raster.drawLine({50, 21}, {71, 10});
     raster.drawLine({93, 21}, {73, 10});
