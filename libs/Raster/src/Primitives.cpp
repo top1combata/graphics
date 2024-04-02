@@ -6,7 +6,7 @@ void Raster::line_dda(int x1, int y1, int x2, int y2, sf::Color color)
     float delta_x = x2-x1;
     float delta_y = y2-y1;
 
-    int m = std::max(delta_x, delta_y);
+    int m = std::max(std::abs(delta_x), std::abs(delta_y));
 
     float eps = 1.0/m;
 

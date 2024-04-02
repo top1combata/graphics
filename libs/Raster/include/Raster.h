@@ -51,4 +51,5 @@ private:
     void polygon_scanline(const Polygon& polygon, sf::Color color);
     void polygon_active_edges(const Polygon& polygon, sf::Color color);
     void polygon_filling(const Polygon& polygon, sf::Color color);
+    void polygon_line_filling(const Polygon& polygon, sf::Color color);
 };
