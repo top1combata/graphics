@@ -7,10 +7,10 @@
 
 
 
-void Raster::polygon_scanline(const Polygon& polygon, sf::Color color)
+void Raster::polygon_scanline(const Polygon& polygon, Color color)
 {
-    int y_min = std::min_element(polygon.begin(), polygon.end(), [](Vector2i v1, Vector2i v2) {return v1.y < v2.y;})->y;
-    int y_max = std::max_element(polygon.begin(), polygon.end(), [](Vector2i v1, Vector2i v2) {return v1.y < v2.y;})->y;
+    int y_min = std::min_element(polygon.begin(), polygon.end(), [](Vec2i v1, Vec2i v2) {return v1.y < v2.y;})->y;
+    int y_max = std::max_element(polygon.begin(), polygon.end(), [](Vec2i v1, Vec2i v2) {return v1.y < v2.y;})->y;
 
     
     std::vector<std::vector<int>> intervals(y_max - y_min + 1);
@@ -51,16 +51,15 @@ void Raster::polygon_scanline(const Polygon& polygon, sf::Color color)
 }
 
 
-struct Edge
+void Raster::polygon_active_edges(const Polygon& polygon, Color color)
 {
-    Vector2i v1,v2;
-};
+    struct Edge
+    {
+        Vec2i v1,v2;
+    };
 
-
-void Raster::polygon_active_edges(const Polygon& polygon, sf::Color color)
-{
-    int y_min = std::min_element(polygon.begin(), polygon.end(), [](Vector2i v1, Vector2i v2) {return v1.y < v2.y;})->y;
-    int y_max = std::max_element(polygon.begin(), polygon.end(), [](Vector2i v1, Vector2i v2) {return v1.y < v2.y;})->y;
+    int y_min = std::min_element(polygon.begin(), polygon.end(), [](Vec2i v1, Vec2i v2) {return v1.y < v2.y;})->y;
+    int y_max = std::max_element(polygon.begin(), polygon.end(), [](Vec2i v1, Vec2i v2) {return v1.y < v2.y;})->y;
 
     std::list<Edge> active_edges;
 
@@ -110,47 +109,46 @@ void Raster::polygon_active_edges(const Polygon& polygon, sf::Color color)
 }
 
 
-Vector2i find_start_pixel(const Raster&, const Raster::Polygon&, sf::Color color);
-
-void Raster::polygon_filling(const Polygon& polygon, sf::Color color)
+void Raster::polygon_filling(const Polygon& polygon, Color color)
 {
 
     for (int i = 0; i < polygon.size()-1; i++)
-        drawLine(polygon[i], polygon[i+1], color);
+        line_bresenham8(polygon[i], polygon[i+1], color);
 
-
-    std::queue<Vector2i> queue;
-    queue.push(find_start_pixel(*this, polygon, color));
+    std::queue<Vec2i> queue;
+    queue.push(find_start_pixel(polygon, color));
     
-    std::vector<Vector2i> dirs = {{1,0},{0,1},{-1,0},{0,-1}};
+    std::vector<Vec2i> dirs = {{1,0},{0,1},{-1,0},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
 
     while (queue.size())
     {
-        Vector2i pixel = queue.front();
+        Vec2i pixel = queue.front();
         queue.pop();
         if (getPixel(pixel) == color)
             continue;
 
         setPixel(pixel, color);
 
-        for (Vector2i dir : dirs)
+        for (Vec2i dir : dirs)
             if (getPixel(pixel+dir) != color)
                 queue.push(pixel+dir);
     }
 }
 
 
-void Raster::polygon_line_filling(const Polygon& polygon, sf::Color color)
+void Raster::polygon_line_filling(const Polygon& polygon, Color color)
 {
     for (int i = 0; i < polygon.size()-1; i++)
-        drawLine(polygon[i], polygon[i+1], color);
+        line_bresenham8(polygon[i], polygon[i+1], color);
 
-    std::stack<Vector2i> stack;
-    stack.push(find_start_pixel(*this, polygon, color));
+    std::stack<Vec2i> stack;
+    stack.push(find_start_pixel(polygon, color));
+
+    std::vector<Vec2i> dirs = {{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
 
     while (stack.size())
     {
-        Vector2i pixel = stack.top();
+        Vec2i pixel = stack.top();
         stack.pop();
 
         if (getPixel(pixel) == color)
@@ -164,27 +162,25 @@ void Raster::polygon_line_filling(const Polygon& polygon, sf::Color color)
 
         int x_max = pixel.x;
         while (getPixel({x_max+1, y}) != color)
-            x_max++;          
+            x_max++;         
 
-        for (int x = x_min; x <= x_max; x++)
+        for (Vec2i p = {x_min,y}; p.x <= x_max; p.x++)
         {
-            setPixel(x,y,color);
+            setPixel(p,color);
 
-            if (getPixel({x,y-1}) != color)
-                stack.push({x,y-1});
-
-            if (getPixel({x,y+1}) != color)
-                stack.push({x,y+1});
+            for (Vec2i dir : dirs)
+                if (getPixel(p+dir) != color)
+                    stack.push(p+dir);
         }
     }
 }
 
 
-Vector2i find_start_pixel(const Raster& raster, const Raster::Polygon& polygon, sf::Color color)
+Raster::Vec2i Raster::find_start_pixel(const Polygon& polygon, Color color)
 {
-    int y_max = std::max_element(polygon.begin(), polygon.end(), [](Vector2i v1, Vector2i v2) {return v1.y < v2.y;})->y;
+    int y_max = std::max_element(polygon.begin(), polygon.end(), [](Raster::Vec2i v1, Vec2i v2) {return v1.y < v2.y;})->y;
 
-    Vector2i v, v1, v2;
+    Vec2i v, v1, v2;
 
     for (int i = 0; i < polygon.size()-1; i++)
     {

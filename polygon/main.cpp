@@ -5,8 +5,8 @@
 constexpr unsigned WIDTH  = 1000;
 constexpr unsigned HEIGHT = 1000;
 
-constexpr unsigned GRID_SZ_X = 201;
-constexpr unsigned GRID_SZ_Y = 201;
+constexpr unsigned GRID_SZ_X = 251;
+constexpr unsigned GRID_SZ_Y = 251;
 
 
 int main()
@@ -18,14 +18,18 @@ int main()
 
     // Raster::Polygon polygon = {{30,10},{10,30},{30,50},{50,30},{30,10}};
     // Raster::Polygon polygon = {{10,10},{10,30},{30,30},{30,10},{10,10}};
-    // Raster::Polygon polygon = {{20,20},{120,40},{130,10},{120,80},{40,120},{10,7},{20,20}};
-    // Raster::Polygon polygon = {{50,20},{100,20},{130,80},{20,80},{50,20}};
-    // Raster::Polygon polygon = {{20,20},{20,140},{60,100},{60,60},{20,20}};
-    Raster::Polygon polygon = {{50,50},{80,30},{70,80},{50,70},{90,110},{85,90},{100,100},{105,125},{70,100},{90,130},{40,90},{45,70},{50,50}};
-    // Raster::Polygon polygon = {{40,40},{60,20},{80,40},{100,20},{100,100},{20,100},{20,20},{40,40}};
+    
+    Raster::Polygon polygon1 = {{20,30},{50,10},{40,60},{20,50},{60,90},{55,70},{70,80},{75,105},{40,80},{60,110},{10,70},{15,50},{20,30}};
+    Raster::Polygon polygon2 = {{80,20},{90,10},{100,20},{110,10},{110,50},{70,50},{70,10},{80,20}};
+    Raster::Polygon polygon3 = {{140,20},{240,40},{250,10},{240,80},{160,120},{130,7},{140,20}};
+    Raster::Polygon polygon4 = {{20,120},{20,240},{60,200},{60,160},{20,120}};
+    Raster::Polygon polygon5 = {{100,120},{150,120},{180,180},{70,180},{100,120}};
 
-    raster.drawPolygon(polygon);
-
+    raster.drawPolygon(polygon1);
+    raster.drawPolygon(polygon2);
+    raster.drawPolygon(polygon3);
+    raster.drawPolygon(polygon4);
+    raster.drawPolygon(polygon5);
 
     while (window.isOpen())
     {
@@ -40,7 +44,7 @@ int main()
 
         window.display();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
     return 0;
