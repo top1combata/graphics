@@ -67,8 +67,8 @@ void Raster::drawCircle(Vec2i r0, unsigned R, Color color)
 
 void Raster::drawPolygon(const Polygon& polygon, Color color)
 {
-    polygon_scanline(polygon, color);
-    // polygon_filling(polygon, color);
+    // polygon_scanline(polygon, color);
+    polygon_filling(polygon, color);
     // polygon_active_edges(polygon, color);
     // polygon_line_filling(polygon, color);
 }

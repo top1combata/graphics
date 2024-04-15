@@ -6,7 +6,6 @@
 #include <Raster.h>
 
 
-
 void Raster::polygon_scanline(const Polygon& polygon, Color color)
 {
     int y_min = std::min_element(polygon.begin(), polygon.end(), [](Vec2i v1, Vec2i v2) {return v1.y < v2.y;})->y;

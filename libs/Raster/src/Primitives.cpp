@@ -67,7 +67,7 @@ void Raster::line_bresenham8(Vec2i p1, Vec2i p2, Color color)
     int d = delta.y-delta.x;
     while (p != p2)
     {
-        setPixel(p);
+        setPixel(p, color);
 
         if (d < 0)
         {
@@ -80,7 +80,7 @@ void Raster::line_bresenham8(Vec2i p1, Vec2i p2, Color color)
             d -= 2*delta.x;
         }
     }
-    setPixel(p2);
+    setPixel(p2, color);
 }
 
 
