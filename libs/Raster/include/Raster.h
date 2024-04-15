@@ -6,30 +6,30 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
-
-using sf::Vector2i;
-
-
 struct Raster : public sf::Drawable
 {
 public:
 
     Raster(unsigned sz_x, unsigned sz_y, unsigned window_width, unsigned window_height);
+
+    using Vec2i = sf::Vector2i;
+    using Vec2f = sf::Vector2f;
+    using Polygon = std::vector<Vec2i>;
+    using Color = sf::Color;
     
-    void setPixel(Vector2i pixel, sf::Color color = DEFAULT_FILL_COLOR);
-    void setPixel(int x, int y, sf::Color color = DEFAULT_FILL_COLOR);
-    sf::Color getPixel(Vector2i pixel);
-    sf::Color getPixel(int x, int y);
+    void setPixel(Vec2i pixel, Color color = DEFAULT_FILL_COLOR);
+    void setPixel(int x, int y, Color color = DEFAULT_FILL_COLOR);
+    Color getPixel(Vec2i pixel);
+    Color getPixel(int x, int y);
 
     void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
 
     // drawing primitives
-    void drawLine(Vector2i r1, Vector2i r2, sf::Color color = DEFAULT_FILL_COLOR);
+    void drawLine(Vec2i r1, Vec2i r2, Color color = DEFAULT_FILL_COLOR);
 
-    void drawCircle(Vector2i r0, unsigned r, sf::Color color = DEFAULT_FILL_COLOR);
+    void drawCircle(Vec2i r0, unsigned r, Color color = DEFAULT_FILL_COLOR);
 
-    using Polygon = std::vector<Vector2i>;
-    void drawPolygon(const Polygon& polygon, sf::Color color = DEFAULT_FILL_COLOR);
+    void drawPolygon(const Polygon& polygon, Color color = DEFAULT_FILL_COLOR);
 
 private:
 
@@ -37,19 +37,24 @@ private:
     unsigned m_window_height;
     unsigned m_window_width;
 
-    static const sf::Color DEFAULT_FILL_COLOR;
+    static const Color DEFAULT_FILL_COLOR;
 
     // lines
-    void line_dda(int x1, int y1, int x2, int y2, sf::Color color);
-    void line_bresenham(int x1, int y1, int x2, int y2, sf::Color color);
+    void line_dda(Vec2i p1, Vec2i p2, Color color);
+    void line_bresenham(Vec2i p1, Vec2i p2, Color color);
+    void line_bresenham8(Vec2i p1, Vec2i p2, Color color);
 
     // circles
-    void circle_dda(int x0, int y0, int r, sf::Color color);
-    void circle_bresenham(int x0, int y0, int r, sf::Color color);
+    void circle_dda(Vec2i p0, int r, Color color);
+    void circle_bresenham(Vec2i p0, int r, Color color);
+    // routine for bresenham circle
+    void symetry_fill(int x, int y, int x0, int y0, Color color);
 
     // polygons
-    void polygon_scanline(const Polygon& polygon, sf::Color color);
-    void polygon_active_edges(const Polygon& polygon, sf::Color color);
-    void polygon_filling(const Polygon& polygon, sf::Color color);
-    void polygon_line_filling(const Polygon& polygon, sf::Color color);
+    void polygon_scanline(const Polygon& polygon, Color color);
+    void polygon_active_edges(const Polygon& polygon, Color color);
+    void polygon_filling(const Polygon& polygon, Color color);
+    void polygon_line_filling(const Polygon& polygon, Color color);
+    // for filling
+    Vec2i find_start_pixel(const Polygon& polygon, Color color);
 };
