@@ -8,8 +8,13 @@ endif()
 
 add_subdirectory(libs/Raster)
 
-add_subdirectory(line_circle)
-target_link_libraries(line_circle Raster)
+file(GLOB dirs examples/*)
 
-add_subdirectory(polygon)
-target_link_libraries(polygon Raster)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
+foreach(dir ${dirs})
+    get_filename_component(dir ${dir} NAME)
+
+    add_subdirectory(examples/${dir})
+    target_link_libraries(${dir} Raster)
+endforeach()
