@@ -4,7 +4,8 @@
 const Raster::Color Raster::DEFAULT_FILL_COLOR = Color::Red;
 
 
-Raster::Raster(unsigned sz_x, unsigned sz_y, unsigned window_width, unsigned window_height) : m_raster(sz_x, std::vector<sf::RectangleShape>(sz_y, sf::RectangleShape({(float)window_width/sz_x, (float)window_height/sz_y}))),
+Raster::Raster(unsigned sz_x, unsigned sz_y, unsigned window_width, unsigned window_height) : 
+        m_raster(sz_x, std::vector<sf::RectangleShape>(sz_y, sf::RectangleShape({(float)window_width/sz_x, (float)window_height/sz_y}))),
         m_window_height(window_height),
         m_window_width(window_width)
 {
@@ -67,8 +68,11 @@ void Raster::drawCircle(Vec2i r0, unsigned R, Color color)
 
 void Raster::drawPolygon(const Polygon& polygon, Color color)
 {
-    // polygon_scanline(polygon, color);
-    polygon_filling(polygon, color);
+    if (polygon.size() == 0)
+        return;
+        
+    polygon_scanline(polygon, color);
+    // polygon_filling(polygon, color);
     // polygon_active_edges(polygon, color);
     // polygon_line_filling(polygon, color);
 }
