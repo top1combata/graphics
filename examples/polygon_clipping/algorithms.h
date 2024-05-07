@@ -1,3 +1,5 @@
+#pragma once
+
 #include "geometry.h"
 
 std::vector<Polygon> clip_sutherland_hodgman(const Polygon& clip_polygon, const Polygon& polygon);

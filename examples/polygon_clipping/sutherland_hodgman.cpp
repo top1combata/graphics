@@ -49,7 +49,7 @@ std::vector<Polygon> clip_polygons_by_halfplane(const std::vector<Polygon>& poly
         {
             Vec2i curr_vert = polygon[idx];
             Vec2i prev_vert = polygon[(idx+n-1)%n];
-            auto intersection = segment_line_intersection(prev_vert, curr_vert, p1, p2);
+            auto intersection = segment_line_intersection({prev_vert, curr_vert}, {p1, p2});
 
             bool is_inside = dot_product(curr_vert, normal) + C < 0;
  

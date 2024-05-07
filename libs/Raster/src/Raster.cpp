@@ -71,8 +71,8 @@ void Raster::drawPolygon(const Polygon& polygon, Color color)
     if (polygon.size() == 0)
         return;
         
-    polygon_scanline(polygon, color);
+    // polygon_scanline(polygon, color);
     // polygon_filling(polygon, color);
-    // polygon_active_edges(polygon, color);
+    polygon_active_edges(polygon, color);
     // polygon_line_filling(polygon, color);
 }
